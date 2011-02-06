@@ -16,4 +16,12 @@ class ClipboardDaemon(daemon.Daemon):
 		self.c = ClipboardClient(self.conf, self.logger, gtk.clipboard_get())
 		self.s.start()
 		self.c.start()
+		try:
+			self.s.join(1)
+			self.c.join(1)
+			print "bla"
+		except KeyboardInterrupt:
+			self.logger.debug('Received keyboard interrupt, shutting down threads')
+			self.s.kill_received = True
+			self.c.kill_received = True
 

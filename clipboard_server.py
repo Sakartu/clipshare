@@ -4,6 +4,7 @@ import traceback
 import sys
 from ncrypt.cipher import DecryptCipher, CipherType
 class ClipboardServer(threading.Thread):
+	kill_received = False
 	def __init__(self, conf, logger, clipboard=None):
 		try:
 			threading.Thread.__init__(self)
@@ -19,11 +20,11 @@ class ClipboardServer(threading.Thread):
 			sys.exit(-1)
 
 	def run(self):
-		keyfile = open(conf['key'], 'r')
+		keyfile = open(self.conf['key'], 'r')
 		keyline = keyfile.readline()
 		ct = CipherType( 'AES-256', 'CBC' )
 		self.lasttext = None
-		while True:
+		while not self.kill_received:
 			try:
 				message, address = self.sock.recvfrom(8192)
 				if self.lasttext != message:
@@ -35,7 +36,7 @@ class ClipboardServer(threading.Thread):
 						self.clipboard.store()
 				self.lasttext = message
 			except (KeyboardInterrupt, SystemExit):
-				raise
+				self.kill_received = True
 			except:
 				traceback.print_exc()
 

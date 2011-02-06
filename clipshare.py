@@ -98,13 +98,15 @@ def main():
 		elif 'genkey' == sys.argv[1]:
 			genkey()
 		else:
-			logger.error("Unknown command")
+			logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
 			sys.exit(2)
+
 		sys.exit(0)
 	else:
-		logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
-		sys.exit(2)
-	logger.debug('Everything done...')
+		daemon.run()
+		#logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
+		#sys.exit(2)
+	logger.debug('All daemons setup, main process will now exit.')
 
 if __name__ == '__main__':
 	main()

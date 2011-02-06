@@ -4,6 +4,7 @@ import threading, thread
 import sys
 from ncrypt.cipher import EncryptCipher, CipherType
 class ClipboardClient(threading.Thread):
+	kill_received = False
 	def __init__(self, conf, logger, clipboard=None):
 		try:
 			threading.Thread.__init__(self)
@@ -28,17 +29,20 @@ class ClipboardClient(threading.Thread):
 			sys.exit(-1)
 		
 	def run(self):
-		keyfile = open(conf['key'], 'r')
+		keyfile = open(self.conf['key'], 'r')
 		keyline = keyfile.readline()
 		ct = CipherType( 'AES-256', 'CBC' )
 		#we run indefinitly
 		self.lasttext = ''
-		while True:
-			time.sleep(1)
-			text = self.clipboard.wait_for_text()
-			if text and text != self.lasttext:
-				encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength())
-				self.logger.debug("Sending over message \"" + text + "\"...")
-				self.sock.send(encr.finish(text))
-			self.lasttext = text
+		while not self.kill_received:
+			try:
+				time.sleep(1)
+				text = self.clipboard.wait_for_text()
+				if text and text != self.lasttext:
+					encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength())
+					self.logger.debug("Sending over message \"" + text + "\"...")
+					self.sock.send(encr.finish(text))
+				self.lasttext = text
+			except KeyboardInterrupt:
+				self.kill_received = True
 
