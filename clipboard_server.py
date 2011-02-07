@@ -2,10 +2,18 @@ import socket
 import threading, thread
 import traceback
 import sys
+import re
+import cliputil
 from ncrypt.cipher import DecryptCipher, CipherType
+
+new_client_matcher = re.compile(r"CSHELO:" +	#beginning header
+				"((\d{,3}\.){3}(\d{,3})):" +	#ip address, more or less, should be sanitized before use
+				"([0-9]):" +					#port
+				"OLEHSC")						#ending header
+
 class ClipboardServer(threading.Thread):
 	kill_received = False
-	def __init__(self, conf, logger, clipboard=None):
+	def __init__(self, conf, logger, client, clipboard=None):
 		try:
 			threading.Thread.__init__(self)
 			self.logger = logger
@@ -16,7 +24,7 @@ class ClipboardServer(threading.Thread):
 				self.sock.bind(('', int(conf['port'])))
 			else:
 				self.sock.bind(('', 1234)) #default to port 1234
-
+			self.client = client
 			self.clipboard = clipboard
 		except socket.error, (value, message):
 			if self.sock:
@@ -32,7 +40,14 @@ class ClipboardServer(threading.Thread):
 		while not self.kill_received:
 			try:
 				message, address = self.sock.recvfrom(8192)
-				if self.lasttext != message:
+				#first check whether the message happens to be a CSHELO:
+				m = new_client_matcher.match(message)
+				if m:
+					ip = m.group(1) #the ip address of a new client
+					port = m.group(4) #the port number the client wishes to communicate on
+					if cliputil.safe_ip(ip) and cliputil.safe_port(port): #we check for sane ip-address and port
+						self.client.new_client_list.append((ip, port))
+				elif self.lasttext != message:
 					decr = DecryptCipher(ct, keyline, 'b' * ct.ivLength())
 					decrmsg = decr.finish(message)
 					if decrmsg != self.clipboard.wait_for_text():
@@ -45,4 +60,7 @@ class ClipboardServer(threading.Thread):
 			except:
 				traceback.print_exc()
 				sys.exit(2)
+
+		
+
 

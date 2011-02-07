@@ -10,10 +10,10 @@ class ClipboardDaemon(daemon.Daemon):
 		self.logger = logger
 
 	def run(self):
-		self.logger.debug('Setting up server...')
-		self.s = ClipboardServer(self.conf, self.logger, gtk.clipboard_get())
 		self.logger.debug('Setting up client...')
 		self.c = ClipboardClient(self.conf, self.logger, gtk.clipboard_get())
+		self.logger.debug('Setting up server...')
+		self.s = ClipboardServer(self.conf, self.logger, c, gtk.clipboard_get())
 		self.s.start()
 		self.c.start()
 		try:
