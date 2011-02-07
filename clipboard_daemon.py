@@ -17,9 +17,9 @@ class ClipboardDaemon(daemon.Daemon):
 		self.s.start()
 		self.c.start()
 		try:
-			self.s.join(1)
-			self.c.join(1)
-			print "bla"
+			while True: #to remain responsive to ^c we join with timeout
+				self.s.join(1)
+				self.c.join(1)
 		except KeyboardInterrupt:
 			self.logger.debug('Received keyboard interrupt, shutting down threads')
 			self.s.kill_received = True

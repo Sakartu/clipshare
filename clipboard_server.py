@@ -11,6 +11,7 @@ class ClipboardServer(threading.Thread):
 			self.logger = logger
 			self.conf = conf
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			self.sock.settimeout(0.5)
 			self.sock.bind(('', int(conf['port'])))
 			self.clipboard = clipboard
 		except socket.error, (value, message):
@@ -23,7 +24,7 @@ class ClipboardServer(threading.Thread):
 		keyfile = open(self.conf['key'], 'r')
 		keyline = keyfile.readline()
 		ct = CipherType( 'AES-256', 'CBC' )
-		self.lasttext = None
+		self.lasttext = ''
 		while not self.kill_received:
 			try:
 				message, address = self.sock.recvfrom(8192)
@@ -35,8 +36,9 @@ class ClipboardServer(threading.Thread):
 						self.clipboard.set_text(decrmsg)
 						self.clipboard.store()
 				self.lasttext = message
-			except (KeyboardInterrupt, SystemExit):
-				self.kill_received = True
+			except socket.timeout:
+				pass #we ignore receiving socket timeouts
 			except:
 				traceback.print_exc()
+				sys.exit(2)
 

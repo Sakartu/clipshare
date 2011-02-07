@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import socket
 import gtk
 import threading, thread
 import traceback
@@ -20,8 +19,9 @@ LEVELS = {'debug': logging.DEBUG,
 		'warning': logging.WARNING,
 		'error': logging.ERROR,
 		'critical': logging.CRITICAL}
-#global socket used to send and receive clipboard content over
-sock = None
+
+#a global variable defining whether we're in debug mode or not
+DEBUG = True
 
 #the local clipboard, retrieved from gtk
 clipboard = None
@@ -33,29 +33,32 @@ logger = None
 conf = {}
 
 #the path to the configuration file
-conf_path = os.path.join(os.getenv('HOME'), '.config/clipshare/clipshare.conf')
+conf_path = os.path.expanduser('~/.config/clipshare/clipshare.conf')
 
 def initialize():
 	global logger
 	#first of all, we initialize the configfile
 	parse_conf()
 	#then we initialize the logging functionality
-	try:
-		os.makedirs(os.path.dirname(conf['logfile']))
-	except OSError:
-		pass
-	except:
-		print 'Could nog create logfile or dirs, exitting'
-		sys.exit(-1)
 	logger = logging.getLogger('Clipshare Logger')
-	logger.setLevel(LEVELS[conf['loglevel']])
-	filehandler = logging.FileHandler(conf['logfile'])
-	logger.addHandler(filehandler)
+	if 'loglevel' in conf:
+		logger.setLevel(LEVELS[conf['loglevel']])
+	else:
+		logger.setLevel(logging.ERROR) #default to ERROR
+	if 'logfile' in conf:
+		if not os.path.exists(os.path.dirname(conf['logfile'])):
+			try:
+				os.makedirs(os.path.dirname(conf['logfile']))
+			except:
+				print 'Could nog create logfile or dirs, exitting'
+				sys.exit(2)
+		filehandler = logging.FileHandler(conf['logfile'])
+		logger.addHandler(filehandler)
 	if 'stdout' in conf:
 		consolehandler = logging.StreamHandler()
 		logger.addHandler(consolehandler)
 	#now see if there's a key
-	if not os.path.exists(conf['key']):
+	if not 'key' in conf or not os.path.exists(conf['key']):
 		print "No keyfile present, generating one..."
 		genkey()
 
@@ -80,10 +83,19 @@ def genkey():
 		passwd = getpass.getpass("Please enter a passphrase for your AES key: ")
 		passwd2 = getpass.getpass("Please enter your passphrase again: ")
 	keyhash = hashlib.sha256(passwd).digest()
+	if not 'key' in conf:
+		conf['key'] = os.path.expanduser('~/.clipshare/clipshare.key')
+	if not os.path.exists(os.path.dirname(conf['key'])):
+		os.makedirs(os.path.dirname(conf['key']))
 	keyfile = open(conf['key'], 'w')
 	keyfile.write(keyhash)
 	keyfile.close()
 	logger.debug("Keyfile \"clipshare.key\" written successfully!")
+
+def usage(exit=True):
+	logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
+	if exit:
+		sys.exit(2)
 
 def main():
 	initialize()
@@ -98,15 +110,13 @@ def main():
 		elif 'genkey' == sys.argv[1]:
 			genkey()
 		else:
-			logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
-			sys.exit(2)
-
-		sys.exit(0)
-	else:
+			usage()
+	elif DEBUG:
 		daemon.run()
-		#logger.error("Usage: %s start|stop|restart|genkey" % sys.argv[0])
-		#sys.exit(2)
+	else:
+		usage()
 	logger.debug('All daemons setup, main process will now exit.')
+	sys.exit(0)
 
 if __name__ == '__main__':
 	main()

@@ -35,14 +35,11 @@ class ClipboardClient(threading.Thread):
 		#we run indefinitly
 		self.lasttext = ''
 		while not self.kill_received:
-			try:
-				time.sleep(1)
-				text = self.clipboard.wait_for_text()
-				if text and text != self.lasttext:
-					encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength())
-					self.logger.debug("Sending over message \"" + text + "\"...")
-					self.sock.send(encr.finish(text))
-				self.lasttext = text
-			except KeyboardInterrupt:
-				self.kill_received = True
+			time.sleep(1)
+			text = self.clipboard.wait_for_text()
+			if text and text != self.lasttext:
+				encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength())
+				self.logger.debug("Sending over message \"" + text + "\"...")
+				self.sock.send(encr.finish(text))
+			self.lasttext = text
 
