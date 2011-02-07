@@ -18,7 +18,10 @@ class ClipboardClient(threading.Thread):
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-			self.sock.connect(('<broadcast>', int(conf['port'])))
+			if 'port' in conf:
+				self.sock.connect(('<broadcast>', int(conf['port'])))
+			else:
+				self.sock.connect(('<broadcast>', 1234)) #default to port 1234
 
 			#and set the clipboard
 			self.clipboard = clipboard
@@ -38,7 +41,7 @@ class ClipboardClient(threading.Thread):
 			time.sleep(1)
 			text = self.clipboard.wait_for_text()
 			if text and text != self.lasttext:
-				encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength())
+				encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength()) #use static IV
 				self.logger.debug("Sending over message \"" + text + "\"...")
 				self.sock.send(encr.finish(text))
 			self.lasttext = text

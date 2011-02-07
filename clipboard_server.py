@@ -12,7 +12,11 @@ class ClipboardServer(threading.Thread):
 			self.conf = conf
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			self.sock.settimeout(0.5)
-			self.sock.bind(('', int(conf['port'])))
+			if 'port' in conf:
+				self.sock.bind(('', int(conf['port'])))
+			else:
+				self.sock.bind(('', 1234)) #default to port 1234
+
 			self.clipboard = clipboard
 		except socket.error, (value, message):
 			if self.sock:
@@ -21,7 +25,7 @@ class ClipboardServer(threading.Thread):
 			sys.exit(-1)
 
 	def run(self):
-		keyfile = open(self.conf['key'], 'r')
+		keyfile = open(self.conf['key'], 'r') #no need to check existence, key is always present
 		keyline = keyfile.readline()
 		ct = CipherType( 'AES-256', 'CBC' )
 		self.lasttext = ''

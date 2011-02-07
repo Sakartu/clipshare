@@ -82,7 +82,7 @@ def genkey():
 	while passwd == '' or passwd != passwd2:
 		passwd = getpass.getpass("Please enter a passphrase for your AES key: ")
 		passwd2 = getpass.getpass("Please enter your passphrase again: ")
-	keyhash = hashlib.sha256(passwd).digest()
+	keyhash = hashlib.sha256(passwd).digest() #use the sha-1 of the given password as passphrase for aes
 	if not 'key' in conf:
 		conf['key'] = os.path.expanduser('~/.clipshare/clipshare.key')
 	if not os.path.exists(os.path.dirname(conf['key'])):
