@@ -63,8 +63,7 @@ class ClipshareDaemon(Daemon):
 			csannouncer = announcer.ClipshareAnnouncer(self.conf)
 			csannouncer.run()
 			self.logger.info('Announcer setup complete.')
-
-			print('All daemons setup, main process will now exit.')
+			self.logger.info('All daemons setup, main process will now exit.')
 			while True:
 				time.sleep(1)
 		except KeyboardInterrupt:
