@@ -39,7 +39,7 @@ An init.d script has been provided for your convenience. It can be found in
 the /init directory in in the project dir. Under Ubuntu (at least up to 11.04)
 this can be used as follows:
 
-user@box$ sudo cp /init/clipshare /etc/init.d/clipshare
-user@box$ sudo chmod +x /etc/init.d/clipshare
-user@box$ sudo update-rc.d clipshare defaults
+user@box$ sudo cp /init/clipshare /etc/init.d/clipshare  
+user@box$ sudo chmod +x /etc/init.d/clipshare  
+user@box$ sudo update-rc.d clipshare defaults  
 
