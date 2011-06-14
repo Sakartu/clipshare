@@ -3,14 +3,13 @@ import socket
 import traceback
 import logging
 import util.clipshare_util as util
-import client.clipshare_remote_client as remote
 from threading import Thread
 
 class ClipshareServer(Thread):
 	s = None
 	logger = logging.getLogger('ClipshareRegistrationServer')
 
-	clientlist = []
+	clientlist = {}
 	just_in = ''
 
 	def __init__(self, port, buf_size, conf):
@@ -44,7 +43,7 @@ class ClipshareServer(Thread):
 				(ip, port) = util.parse_cs_helo_msg(decrypted)
 				#check that the ip isn't our own ip:
 				if str(ip) != self.conf['ip'] and str(ip) not in self.clientlist:
-					self.clientlist.append(remote.ClipshareRemoteClient(ip, port))
+					self.clientlist[ip] = port
 					self.logger.info('Added client with ip %s on port %d!' % (ip, port))
 			elif t == 'CSCONTENT':
 				#new content, put it in clipboard

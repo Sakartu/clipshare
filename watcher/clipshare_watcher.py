@@ -32,8 +32,8 @@ class ClipshareWatcher:
 			self.logger.info('Changed clipboard contents found, sending...')
 			#new content, send it around
 			enc = util.encrypt(self.conf['keyfile'], 'CSCONTENT:' + content + ':TNETNOCSC')
-			for c in self.server.clientlist:
-				util.send_content(c.ip, c.port, enc)
+			for (ip, port) in self.server.clientlist.items():
+				util.send_content(ip, port, enc)
 			self.previous = content
 
 
