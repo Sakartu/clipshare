@@ -1,0 +1,48 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ClipboardContentRequestHandler	clipboard_dispatcher.py	/^class ClipboardContentRequestHandler(SocketServer.StreamRequestHandler):$/;"	c
+ClipboardDaemon	clipboard_daemon.py	/^class ClipboardDaemon(Daemon):$/;"	c
+ClipboardDispatcher	clipboard_dispatcher.py	/^class ClipboardDispatcher():$/;"	c
+ClipboardMonitor	clipboard_monitor.py	/^class ClipboardMonitor(threading.Thread):$/;"	c
+ClipboardNewClientRequestHandler	clipboard_dispatcher.py	/^class ClipboardNewClientRequestHandler(SocketServer.BaseRequestHandler):$/;"	c
+DEBUG	clipshare.py	/^DEBUG = True$/;"	v
+Daemon	daemon.py	/^class Daemon:$/;"	c
+LEVELS	clipshare.py	/^LEVELS = {'debug': logging.DEBUG,$/;"	v
+__init__	clipboard_daemon.py	/^	def __init__(self, pid, conf, logger, stdin=os.devnull, stdout=os.devnull, stderr=os.devnull):$/;"	m	class:ClipboardDaemon
+__init__	clipboard_dispatcher.py	/^	def __init__(host, port, self, conf, logger):$/;"	m	class:ClipboardDispatcher
+__init__	clipboard_monitor.py	/^	def __init__(self, connections):$/;"	m	class:ClipboardMonitor
+__init__	daemon.py	/^	def __init__(self, pidfile, stdin='\/dev\/null', stdout='\/dev\/null', stderr='\/dev\/null'):$/;"	m	class:Daemon
+cb	clipboard_util.py	/^cb = gtk.clipboard_get()$/;"	v
+cblock	clipboard_util.py	/^cblock = threading.Lock()$/;"	v
+clipboard	clipshare.py	/^clipboard = None$/;"	v
+conf	clipshare.py	/^conf = {}$/;"	v
+conf_path	clipshare.py	/^conf_path = os.path.expanduser('~\/.config\/clipshare\/clipshare.conf')$/;"	v
+daemonize	daemon.py	/^	def daemonize(self):$/;"	m	class:Daemon
+decrypt	clipboard_util.py	/^def decrypt(keyfile, ciphertext):$/;"	f
+delpid	daemon.py	/^	def delpid(self):$/;"	m	class:Daemon
+encrypt	clipboard_util.py	/^def encrypt(keyfile, plaintext):$/;"	f
+get_from_clipboard	clipboard_util.py	/^def get_from_clipboard():$/;"	f
+handle	clipboard_dispatcher.py	/^	def handle(self):$/;"	m	class:ClipboardContentRequestHandler
+handle	clipboard_dispatcher.py	/^	def handle(self):$/;"	m	class:ClipboardNewClientRequestHandler
+initialize	clipshare.py	/^def initialize():$/;"	f
+logger	clipshare.py	/^logger = None$/;"	v
+main	clipshare.py	/^def main():$/;"	f
+parse_conf	clipshare.py	/^def parse_conf():$/;"	f
+parse_cs_content_msg	clipboard_util.py	/^def parse_cs_content_msg(msg):$/;"	f
+parse_cs_helo_msg	clipboard_util.py	/^def parse_cs_helo_msg(msg):$/;"	f
+parse_params	clipshare.py	/^def parse_params(conf_dict):$/;"	f
+restart	daemon.py	/^	def restart(self):$/;"	m	class:Daemon
+run	clipboard_daemon.py	/^	def run(self):$/;"	m	class:ClipboardDaemon
+run	clipboard_dispatcher.py	/^	def run(self):$/;"	m	class:ClipboardDispatcher
+run	clipboard_monitor.py	/^	def run(self):$/;"	m	class:ClipboardMonitor
+run	daemon.py	/^	def run(self):$/;"	m	class:Daemon
+send_content	clipboard_util.py	/^def send_content(ip, port, content):$/;"	f
+send_cs_helo	clipboard_util.py	/^def send_cs_helo(ip, port):$/;"	f
+start	daemon.py	/^	def start(self):$/;"	m	class:Daemon
+stop	daemon.py	/^	def stop(self):$/;"	m	class:Daemon
+store_in_clipboard	clipboard_util.py	/^def store_in_clipboard(content):$/;"	f
+usage	clipshare.py	/^def usage(exit=True):$/;"	f
