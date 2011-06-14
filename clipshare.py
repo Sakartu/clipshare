@@ -11,6 +11,26 @@ from daemon.clipshare_daemon import ClipshareDaemon
 
 conf = None
 
+usagestr = \
+'''Usage: %prog <command> [options]
+
+This program can be used to share your clipboard over multiple
+machines. It establishes which other devices are in the vicinity
+running the same software and distributes your cliboard amongst
+all of them. All transfers are encrypted using an AES cipher
+based on the key you provide in the config file. As it is a
+symmetric crypto, the same keyfile should be used everywhere.
+By default, all the related files for clipshare are stored in
+~/.clipshare/
+
+The different possible commands are:
+
+    start/stop/restart
+        this starts/stops/restarts clipshare as a daemon
+
+    genkey
+        this will generate a key for you 
+'''
 
 #the path to the configuration file
 CONF_PATH = os.path.expanduser('~/.clipshare/clipshare.conf')
@@ -32,9 +52,9 @@ def initialize():
 
 
 def parse_opts():
-	parser = optparse.OptionParser()
-	parser.add_option('-c', '--conf', nargs=1, dest="new_path") #to specify a config file
-	parser.add_option('-d', '--debug', dest="debug", action='store_true') #to setup debugging
+	parser = optparse.OptionParser(usage=usagestr)
+	parser.add_option('-c', '--conf', nargs=1, dest="new_path", help='NEW_PATH specifies a different configuration file')
+	parser.add_option('-d', '--debug', dest="debug", action='store_true', help='This puts the program in debugging mode, so it will log everything')
 
 	(options, args) = parser.parse_args()
 
@@ -42,7 +62,7 @@ def parse_opts():
 	path = CONF_PATH
 	if options.new_path:
 		path = options.new_path
-
+	
 	if os.path.exists(path) and os.access(path, os.F_OK) and os.access(path, os.W_OK):
 		config.read(path)
 	else:
@@ -50,8 +70,9 @@ def parse_opts():
 		exit(-1)
 
 	result = dict(config.items('clipshare'))
+
 	if options.debug:
-		result['debug'] = 'True'
+		result['debug'] = True
 
 	return (result, args)
 
@@ -59,16 +80,15 @@ def genkey(conf):
 	pass
 
 def usage():
-	print("usage:")
+	print(usagestr)
+	print("Usage: %s start|stop|restart|genkey [options]" % (sys.argv[0]))
+	sys.exit(0)
 
 if __name__ == '__main__':
 	(conf, args) = initialize()
-	#d = ClipshareDaemon('/tmp/clipshare.pid')
+	#daemon = ClipshareDaemon('/tmp/clipshare.pid')
+
 	daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-
-	#DEBUGGING ONLY
-	args.append('debug')
-
 
 	if 'start' in args:
 		daemon.start()
@@ -78,9 +98,8 @@ if __name__ == '__main__':
 		daemon.restart()
 	elif 'genkey' in args:
 		genkey(conf)
-	elif 'debug' in args:
+	elif 'debug' in conf:
 		daemon.run()
 	else:
 		usage()
 
-	print('All daemons setup, main process will now exit.')

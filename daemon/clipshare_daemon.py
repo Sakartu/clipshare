@@ -33,7 +33,7 @@ class ClipshareDaemon(Daemon):
 				try:
 					os.makedirs(os.path.dirname(path))
 				except:
-					print 'Could nog create logfile or dirs, exitting'
+					print('Could nog create logfile or dirs, exitting')
 					sys.exit(2)
 			logging.basicConfig(level=level, filename=path)
 		elif 'stdout' in self.conf and util.parse_bool(self.conf['stdout']):
@@ -64,6 +64,7 @@ class ClipshareDaemon(Daemon):
 			csannouncer.run()
 			self.logger.info('Announcer setup complete.')
 
+			print('All daemons setup, main process will now exit.')
 			while True:
 				time.sleep(1)
 		except KeyboardInterrupt:
