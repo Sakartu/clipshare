@@ -40,7 +40,13 @@ class ClipshareDaemon(Daemon):
 			logging.basicConfig(level=level)
 		self.logger.info('Logging setup, continuing...')
 
+
 	def run(self):
+		#first check whether a key exists
+		if not 'keyfile' in self.conf or not os.path.exists(os.path.expanduser(self.conf['keyfile'])):
+			self.logger.error("No keyfile present, aborting!")
+			sys.exit(2)
+
 		#start a registration server
 		if 'port' in self.conf:
 			port = int(self.conf['port'])
@@ -63,7 +69,7 @@ class ClipshareDaemon(Daemon):
 			csannouncer = announcer.ClipshareAnnouncer(self.conf)
 			csannouncer.run()
 			self.logger.info('Announcer setup complete.')
-			self.logger.info('All daemons setup, main process will now exit.')
+			self.logger.info('All threads setup, let\'s go!.')
 			while True:
 				time.sleep(1)
 		except KeyboardInterrupt:

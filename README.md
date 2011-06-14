@@ -15,6 +15,10 @@ message and send it to all the clients that it knows. In their turn,
 these clients can decrypt the message and they will change the local
 clipboard to whatever was transmitted.
 
+
+Dependencies
+------------
+
 For Clipshare to work you need the following dependencies:
 
 	- A recent python (tested with 2.6, newer should work, 3.x doesn't due to dependencies)
@@ -28,4 +32,14 @@ other clients to be able to decrypt your messages they will need the same
 key, so you have to bring your key over to your other machines to let
 them communicate
 
+Running Clipshare on startup
+----------------------------
+
+An init.d script has been provided for your convenience. It can be found in
+the /init directory in in the project dir. Under Ubuntu (at least up to 11.04)
+this can be used as follows:
+
+user@box$ sudo cp /init/clipshare /etc/init.d/clipshare
+user@box$ sudo chmod +x /etc/init.d/clipshare
+user@box$ sudo update-rc.d clipshare defaults
 

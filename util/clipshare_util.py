@@ -4,6 +4,7 @@ import threading
 import socket
 import re
 import os
+import util.constants as constants
 
 cb = gtk.clipboard_get()
 cblock = threading.Lock()
@@ -152,3 +153,24 @@ def get_ip(conf):
 		#handle accordingly
 		return result
 
+def genkey(conf):
+	ct = CipherType('AES-256', 'CBC')
+	default_path = constants.KEY_PATH
+	if 'keyfile' in conf:
+		default_path = conf['keyfile']
+	try:
+		path = raw_input('Where would you like your key (Enter for default or ^D to exit)? [%s]: ' % default_path)
+	except EOFError:
+		#user pressed ^D
+		print ''
+		sys.exit(2)
+
+	if path == '':
+		path = default_path
+
+	try:
+		key = open(os.path.expanduser(path), 'w')
+		key.write(os.urandom(ct.keyLength()))
+		print('Key successfully written!\nDon\'t forget to add it to your configfile!')
+	except:
+		print('Something went wrong, maybe no permissions to write key?')
