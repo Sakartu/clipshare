@@ -3,6 +3,7 @@ import gtk
 import threading
 import socket
 import re
+import os
 
 cb = gtk.clipboard_get()
 cblock = threading.Lock()
@@ -39,6 +40,8 @@ def decrypt(keyfile, ciphertext):
 	A decryption function which takes a keyfile and a ciphertext and returns
 	the AES decrypted plaintext of this ciphertext
 	"""
+	if type(keyfile).__name__ == 'str':
+		keyfile = open_file(keyfile)
 	keyline = keyfile.readline()
 	ct = CipherType( 'AES-256', 'CBC' )
 	decr = DecryptCipher(ct, keyline, 'b' * ct.ivLength()) #use static IV
@@ -49,6 +52,8 @@ def encrypt(keyfile, plaintext):
 	An encryption function which takes a keyfile and a plaintext and returns
 	the AES encrypted ciphertext of this plaintext
 	"""
+	if type(keyfile).__name__ == 'str':
+		keyfile = open_file(keyfile)
 	keyline = keyfile.readline()
 	ct = CipherType( 'AES-256', 'CBC' )
 	encr = EncryptCipher(ct, keyline, 'b' * ct.ivLength()) #use static IV
@@ -59,10 +64,12 @@ def get_message_type(message):
 	A method that parses a given message and tries to find out what message 
 	type it is using the regex definitions in the types dict
 	'''
-	for (t, rx) in types.items():
-		m = re.compile(rx).match(message)
-		if m:
-			return t
+	if message:
+		for (t, rx) in types.items():
+			m = re.compile(rx).match(message)
+			if m:
+				return t
+	return None
 
 def parse_cs_helo_msg(msg):                                                                                                                                                
 	""" 
@@ -93,7 +100,7 @@ def parse_cs_content_msg(msg):
 	this method will parse, check and return the content bit
 	if anything is out of order, this method returns None
 	"""
-	if len(msg) > 10 and msg[:10] == 'CSCONTENT:' and msg[-10:] == ':TNETNOCSC':
+	if len(msg) > 20 and msg[:10] == 'CSCONTENT:' and msg[-10:] == 'CSCONTENT:'[::-1]:
 		return msg[10:-10]
 	else:
 		return None
@@ -109,3 +116,8 @@ def send_content(ip, port, content):
 	sock.send(content)
 	sock.close()
 
+def parse_bool(boolstr):
+	return boolstr.lower() in ['yes', 'true', 'y', '1']
+
+def open_file(path):
+	return open(os.path.expanduser(path))
