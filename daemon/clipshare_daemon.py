@@ -6,7 +6,7 @@ import os
 import sys
 import server.clipshare_server as server
 import watcher.clipshare_watcher as watcher
-import announcer.clipshare_watcher as watcher
+import announcer.clipshare_announcer as announcer
 import time
 
 class ClipshareDaemon(Daemon):
@@ -54,14 +54,14 @@ class ClipshareDaemon(Daemon):
 		self.logger.info('Server setup complete.')
 
 		self.logger.info('Setting up clipboard watcher...')
-		watcher = watcher.ClipshareWatcher(self.conf, serv)
-		watcher.run()
+		cswatcher = watcher.ClipshareWatcher(self.conf, serv)
+		cswatcher.run()
 		self.logger.info('Clipboard watcher setup complete.')
 
-		#self.logger.info('Setting up announcer...')
-		#announcer = announcer.ClipshareAnnouncer(self.conf, serv)
-		#announcer.run()
-		#self.logger.info('Announcer setup complete.')
+		self.logger.info('Setting up announcer...')
+		csannouncer = announcer.ClipshareAnnouncer(self.conf)
+		csannouncer.run()
+		self.logger.info('Announcer setup complete.')
 
 
 		while True:

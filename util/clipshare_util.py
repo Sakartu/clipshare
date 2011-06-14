@@ -120,9 +120,9 @@ def broadcast(content, port):
 	A method to udp broadcast the given content to all ip's
 	at the given port
 	'''
-	s = socket.socket(AF_INET, SOCK_DGRAM)
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	s.bind(('', 0))
-	s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 	s.sendto(content, ('<broadcast>', port))
 
 def parse_bool(boolstr):

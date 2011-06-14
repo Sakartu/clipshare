@@ -41,8 +41,10 @@ class ClipshareServer(Thread):
 			if t == 'CSHELO':
 				#new client found, add it to the list
 				(ip, port) = util.parse_cs_helo_msg(decrypted)
-				self.clientlist.append(remote.ClipshareRemoteClient(ip, port))
-				self.logger.info('Added client with ip %s on port %d!' % (ip, port))
+				#check that the ip isn't our own ip:
+				if str(ip) != self.conf['ip']:
+					self.clientlist.append(remote.ClipshareRemoteClient(ip, port))
+					self.logger.info('Added client with ip %s on port %d!' % (ip, port))
 			elif t == 'CSCONTENT':
 				#new content, put it in clipboard
 				content = util.parse_cs_content_msg(decrypted)
