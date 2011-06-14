@@ -66,7 +66,7 @@ def get_message_type(message):
 	'''
 	if message:
 		for (t, rx) in types.items():
-			m = re.compile(rx).match(message)
+			m = re.compile(rx, re.MULTILINE|re.DOTALL).match(message)
 			if m:
 				return t
 	return None
