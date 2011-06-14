@@ -112,7 +112,7 @@ def send_content(ip, port, content):
 
 	"""
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	sock.to(content, (ip, port))
+	sock.sendto(content, (ip, port))
 	sock.close()
 
 def broadcast(content, port):

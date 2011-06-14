@@ -11,6 +11,7 @@ class ClipshareServer(Thread):
 	logger = logging.getLogger('ClipshareRegistrationServer')
 
 	clientlist = []
+	just_in = ''
 
 	def __init__(self, port, buf_size, conf):
 		Thread.__init__(self)
@@ -29,7 +30,7 @@ class ClipshareServer(Thread):
 		'''
 		while True:
 			message, address = self.s.recvfrom(self.buf_size)
-			self.logger.info('Got message, decrypting')
+			self.logger.debug('Got message, decrypting')
 			decrypted = None
 			try:
 				decrypted = util.decrypt(self.conf['keyfile'], message)
@@ -42,12 +43,13 @@ class ClipshareServer(Thread):
 				#new client found, add it to the list
 				(ip, port) = util.parse_cs_helo_msg(decrypted)
 				#check that the ip isn't our own ip:
-				if str(ip) != self.conf['ip']:
+				if str(ip) != self.conf['ip'] and str(ip) not in self.clientlist:
 					self.clientlist.append(remote.ClipshareRemoteClient(ip, port))
 					self.logger.info('Added client with ip %s on port %d!' % (ip, port))
 			elif t == 'CSCONTENT':
 				#new content, put it in clipboard
 				content = util.parse_cs_content_msg(decrypted)
+				self.just_in = content
 				self.logger.info('Got new content: "' + content + '"')
 				util.store_in_clipboard(content)
 			else:

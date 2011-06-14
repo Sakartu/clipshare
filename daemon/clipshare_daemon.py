@@ -47,22 +47,24 @@ class ClipshareDaemon(Daemon):
 		else:
 			port = constants.PORT
 
-		self.logger.info('Setting up server...')
-		serv = server.ClipshareServer(port=port, buf_size=constants.BUF_SIZE, conf=self.conf)
-		serv.daemon = True
-		serv.start()
-		self.logger.info('Server setup complete.')
+		try:
+			self.logger.info('Setting up server...')
+			serv = server.ClipshareServer(port=port, buf_size=constants.BUF_SIZE, conf=self.conf)
+			serv.daemon = True
+			serv.start()
+			self.logger.info('Server setup complete.')
 
-		self.logger.info('Setting up clipboard watcher...')
-		cswatcher = watcher.ClipshareWatcher(self.conf, serv)
-		cswatcher.run()
-		self.logger.info('Clipboard watcher setup complete.')
+			self.logger.info('Setting up clipboard watcher...')
+			cswatcher = watcher.ClipshareWatcher(self.conf, serv)
+			cswatcher.run()
+			self.logger.info('Clipboard watcher setup complete.')
 
-		self.logger.info('Setting up announcer...')
-		csannouncer = announcer.ClipshareAnnouncer(self.conf)
-		csannouncer.run()
-		self.logger.info('Announcer setup complete.')
+			self.logger.info('Setting up announcer...')
+			csannouncer = announcer.ClipshareAnnouncer(self.conf)
+			csannouncer.run()
+			self.logger.info('Announcer setup complete.')
 
-
-		while True:
-			time.sleep(1)
+			while True:
+				time.sleep(1)
+		except KeyboardInterrupt:
+			pass
