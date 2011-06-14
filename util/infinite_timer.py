@@ -7,15 +7,19 @@ class InfiniteTimer(Thread):
 	the timer again.
 	'''
 
-	def __init__(self, interval, function, args=[], kwargs={}):
+	def __init__(self, interval, function, args=[], kwargs={}, immediate=False):
 		Thread.__init__(self)
 		self.interval = interval
 		self.function = function
 		self.args = args
 		self.kwargs = kwargs
 		self.finished = Event()
+		self.immediate = immediate
 
 	def run(self):
+		if self.immediate:
+			self.function(*self.args, **self.kwargs)
+
 		while not self.finished.is_set():
 			self.finished.wait(self.interval)
 			if not self.finished.is_set():
