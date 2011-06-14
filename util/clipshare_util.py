@@ -71,7 +71,7 @@ def get_message_type(message):
 				return t
 	return None
 
-def parse_cs_helo_msg(msg):                                                                                                                                                
+def parse_cs_helo_msg(msg):																																				
 	""" 
 	A method that parses an incoming CSHELO message.
 	if the message is of the following form:
@@ -87,7 +87,7 @@ def parse_cs_helo_msg(msg):
 			ip = m.group(1)
 			port = m.group(3)
 			if len([x for x in ip.split('.') if int(x) < 255]) == 4 and int(port) < 2**16:
-				return (m.group(1), int(m.group(3)))        
+				return (m.group(1), int(m.group(3)))		
 		return None
 	except:
 		return None
@@ -106,18 +106,49 @@ def parse_cs_content_msg(msg):
 		return None
 
 def send_content(ip, port, content):
-	"""                                                                                                                                                                    
+	"""																																									
 	A simple util method used to open a socket to a given ip-address
 	and port, send a message, then close the socket again
 
 	"""
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.connect((ip, port))
-	sock.send(content)
+	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	sock.to(content, (ip, port))
 	sock.close()
+
+def broadcast(content, port):
+	'''
+	A method to udp broadcast the given content to all ip's
+	at the given port
+	'''
+	s = socket.socket(AF_INET, SOCK_DGRAM)
+	s.bind(('', 0))
+	s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+	s.sendto(content, ('<broadcast>', port))
 
 def parse_bool(boolstr):
 	return boolstr.lower() in ['yes', 'true', 'y', '1']
 
 def open_file(path):
 	return open(os.path.expanduser(path))
+
+def get_ip(conf):
+	result = ''
+	if 'ip' in conf:
+		return conf['ip']
+	else:
+		#get all local ip's
+		ips = socket.gethostbyname_ex(socket.gethostname())[2]
+		#remove 127.x.x.x addresses
+		ips = filter(lambda x : x[0:3] != 127, ips)
+		#pick local addresses (starting with 192.168.x.x) before others
+		for ip in ips:
+			if ip[0:7] ==  '192.168':
+				result = ip
+		if not ip:
+			#if no 192.168.x.x address can be found, simply take the first one
+			#in the list
+			result = ips[0]
+		#if we still have no ip, too bad, a higher method will see this and
+		#handle accordingly
+		return result
+
