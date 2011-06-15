@@ -24,6 +24,9 @@ class ClipshareDaemon(Daemon):
 			level = logging.DEBUG
 		else:
 			level = logging.ERROR
+		format = '%(asctime)s : %(message)s'
+		dateformat = '%d/%m/%Y %H:%M:%S'
+
 
 		#then we initialize the logging functionality
 		if 'logfile' in self.conf:
@@ -35,9 +38,9 @@ class ClipshareDaemon(Daemon):
 				except:
 					print('Could nog create logfile or dirs, exitting')
 					sys.exit(2)
-			logging.basicConfig(level=level, filename=path)
+			logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
 		elif 'stdout' in self.conf and util.parse_bool(self.conf['stdout']):
-			logging.basicConfig(level=level)
+			logging.basicConfig(level=level, format=format, datefmt=dateformat)
 		self.logger.info('Logging setup, continuing...')
 
 
