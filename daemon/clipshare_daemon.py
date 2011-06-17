@@ -7,6 +7,7 @@ import sys
 import server.clipshare_server as server
 import watcher.clipshare_watcher as watcher
 import announcer.clipshare_announcer as announcer
+import cleaner.clipshare_cleaner as cleaner
 import time
 
 class ClipshareDaemon(Daemon):
@@ -72,6 +73,12 @@ class ClipshareDaemon(Daemon):
 			csannouncer = announcer.ClipshareAnnouncer(self.conf)
 			csannouncer.run()
 			self.logger.info('Announcer setup complete.')
+
+			self.logger.info('Setting up cleaner...')
+			cscleaner = cleaner.ClipshareCleaner(self.conf, serv)
+			cscleaner.run()
+			self.logger.info('Cleaner setup complete.')
+
 			self.logger.info('All threads setup, let\'s go!.')
 			while True:
 				time.sleep(1)

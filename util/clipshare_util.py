@@ -140,12 +140,12 @@ def get_ip(conf):
 		#get all local ip's
 		ips = socket.gethostbyname_ex(socket.gethostname())[2]
 		#remove 127.x.x.x addresses
-		ips = filter(lambda x : x[0:3] != 127, ips)
+		ips = filter(lambda x : x[0:3] != '127', ips)
 		#pick local addresses (starting with 192.168.x.x) before others
 		for ip in ips:
 			if ip[0:7] ==  '192.168':
 				result = ip
-		if not ip:
+		if not result:
 			#if no 192.168.x.x address can be found, simply take the first one
 			#in the list
 			result = ips[0]

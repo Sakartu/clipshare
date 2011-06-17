@@ -3,13 +3,15 @@ import socket
 import traceback
 import logging
 import util.clipshare_util as util
-from threading import Thread
+from datetime import datetime
+from threading import Thread, Lock
 
 class ClipshareServer(Thread):
 	s = None
 	logger = logging.getLogger('ClipshareRegistrationServer')
 
 	clientlist = {}
+	clientlistlock = Lock()
 	just_in = ''
 
 	def __init__(self, port, buf_size, conf):
@@ -42,9 +44,13 @@ class ClipshareServer(Thread):
 				#new client found, add it to the list
 				(ip, port) = util.parse_cs_helo_msg(decrypted)
 				#check that the ip isn't our own ip:
-				if str(ip) != self.conf['ip'] and str(ip) not in self.clientlist:
-					self.clientlist[ip] = port
-					self.logger.info('Added client with ip %s on port %d!' % (ip, port))
+				if str(ip) != self.conf['ip']:
+					self.clientlistlock.acquire()
+					if str(ip) not in self.clientlist:
+						self.logger.info('Added client with ip %s on port %d!' % (ip, port))
+					self.clientlist[ip] = (port, datetime.now())
+					self.clientlistlock.release()
+						
 			elif t == 'CSCONTENT':
 				#new content, put it in clipboard
 				content = util.parse_cs_content_msg(decrypted)
