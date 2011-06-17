@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 from util.daemon import Daemon
 import util.clipshare_util as util
 import util.constants as constants
@@ -16,44 +17,11 @@ class ClipshareDaemon(Daemon):
 	def __init__(self, conf, pid, stdin=os.devnull, stdout=os.devnull, stderr=os.devnull):
 		Daemon.__init__(self, pid, stdin, stdout, stderr)
 		self.conf = conf
-		self.setup_logging()
-
-	def setup_logging(self):
-		#if we're in debugging mode we use loglevel DEBUG, otherwise ERROR
-		level = None
-		if 'debug' in self.conf:
-			level = logging.DEBUG
-		else:
-			level = logging.ERROR
-		format = '%(asctime)s : %(message)s'
-		dateformat = '%d/%m/%Y %H:%M:%S'
-
-
-		#then we initialize the logging functionality
-		if 'logfile' in self.conf:
-			path = os.path.expanduser(self.conf['logfile'])
-
-			if not os.path.exists(os.path.dirname(path)):
-				try:
-					os.makedirs(os.path.dirname(path))
-				except:
-					print('Could nog create logfile or dirs, exitting')
-					sys.exit(2)
-			logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
-		elif 'stdout' in self.conf and util.parse_bool(self.conf['stdout']):
-			logging.basicConfig(level=level, format=format, datefmt=dateformat)
-
-		self.logger.info('Logging setup complete, dropping privileges...')
-		user = 'nobody'
-		group = 'nogroup'
-		if 'user' in self.conf and 'group' in self.conf:
-			user = self.conf['user']
-			group = self.conf['group']
-
-		util.drop_privileges(user, group)
 
 
 	def run(self):
+		logging.info('Clipshare started.')
+		self.drop_privs()
 		#first check whether a key exists
 		if not 'keyfile' in self.conf or not os.path.exists(os.path.expanduser(self.conf['keyfile'])):
 			self.logger.error("No keyfile present, aborting!")
@@ -92,3 +60,14 @@ class ClipshareDaemon(Daemon):
 				time.sleep(1)
 		except KeyboardInterrupt:
 			pass
+
+	def drop_privs(self):
+		self.logger.info('Logging setup complete, dropping privileges...')
+		user = 'nobody'
+		group = 'nogroup'
+		if 'user' in self.conf and 'group' in self.conf:
+			user = self.conf['user']
+			group = self.conf['group']
+
+		util.drop_privileges(user, group)
+

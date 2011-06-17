@@ -29,7 +29,7 @@ class ClipshareWatcher:
 		if content == self.server.just_in:
 			self.previous = content
 		if content != self.previous and content != None:
-			self.logger.info('Changed clipboard contents found, sending...')
+			self.logger.debug('Changed clipboard contents found, sending...')
 			#new content, send it around
 			enc = util.encrypt(self.conf['keyfile'], 'CSCONTENT:' + content + ':TNETNOCSC')
 			self.server.clientlistlock.acquire()

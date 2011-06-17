@@ -44,8 +44,39 @@ def initialize():
 
 	#we parse the options and the config file
 	(conf, args) = parse_opts()
+	setup_logging(conf)
 
 	return (conf, args)
+
+def setup_logging(conf):
+	#if we're in debugging mode we use loglevel DEBUG, otherwise ERROR
+	level = None
+	if 'debug' in conf:
+		level = logging.DEBUG
+	else:
+		level = logging.INFO
+	format = '%(asctime)s : %(message)s'
+	dateformat = '%d/%m/%Y %H:%M:%S'
+
+
+	#then we initialize the logging functionality
+	if 'logfile' in conf:
+		path = os.path.expanduser(conf['logfile'])
+
+		if not os.path.exists(os.path.dirname(path)):
+			try:
+				os.makedirs(os.path.dirname(path))
+			except:
+				print('Could nog create logfile or dirs, exitting')
+				sys.exit(2)
+		#logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
+		formatter = logging.Formatter(fmt=format, datefmt=dateformat)
+		logging.getLogger().setLevel(level)
+		handler = logging.handlers.RotatingFileHandler(path, maxBytes=constants.MAX_LOG_SIZE, backupCount=2)
+		handler.setFormatter(formatter)
+		logging.getLogger().addHandler(handler)
+	elif 'stdout' in conf and util.parse_bool(conf['stdout']):
+		logging.basicConfig(level=level, format=format, datefmt=dateformat)
 
 
 def parse_opts():

@@ -25,7 +25,7 @@ class ClipshareCleaner():
 		t.start()
 
 	def clean(self):
-		self.logger.info('Cleaning up ip\'s...')
+		self.logger.debug('Cleaning up ip\'s...')
 		now = datetime.now()
 		self.serv.clientlistlock.acquire()
 		for (ip, (port, timestamp)) in self.serv.clientlist.items():

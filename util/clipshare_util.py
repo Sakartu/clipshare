@@ -189,7 +189,6 @@ def drop_privileges(uid_name='nobody', gid_name='nogroup'):
 
 
 	logger.info('Dropping privileges...')
-	logger.info('Started as %s/%s.' % (pwd.getpwuid(starting_uid)[0], grp.getgrgid(starting_gid)[0]))
 
 	if os.getuid() != 0:
 	# We're not root so, like, whatever dude
@@ -221,12 +220,3 @@ def drop_privileges(uid_name='nobody', gid_name='nogroup'):
 		# Ensure a very convervative umask
 		new_umask = 077
 		old_umask = os.umask(new_umask)
-		logger.info('drop_privileges: Old umask: %s, new umask: %s' % \
-		(oct(old_umask), oct(new_umask)))
-
-
-		final_uid = os.getuid()
-		final_gid = os.getgid()
-		logger.info('drop_privileges: running as %s/%s' % \
-		(pwd.getpwuid(final_uid)[0],
-		grp.getgrgid(final_gid)[0]))

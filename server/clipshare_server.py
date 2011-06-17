@@ -37,7 +37,7 @@ class ClipshareServer(Thread):
 				decrypted = util.decrypt(self.conf['keyfile'], message)
 			except CipherError:
 				#something went wrong during decrypting, probably garbage
-				self.logger.info('Got some garbage after decrypting, ignoring')
+				self.logger.debug('Got some garbage after decrypting, ignoring')
 				
 			t = util.get_message_type(decrypted)
 			if t == 'CSHELO':
@@ -55,7 +55,10 @@ class ClipshareServer(Thread):
 				#new content, put it in clipboard
 				content = util.parse_cs_content_msg(decrypted)
 				self.just_in = content
-				self.logger.info('Got new content: "' + content + '"')
+				if 'debug' in self.conf:
+					self.logger.debug('Got new content: "' + content + '" from %s' % address[0])
+				else:
+					self.logger.info('Got new content from %s!' % address[0])
 				util.store_in_clipboard(content)
 			else:
 				#garbage
