@@ -68,7 +68,7 @@ def parse_opts():
 
 	result = dict(config.items('clipshare'))
 
-	if options.debug:
+	if options.debug or 'debug' in result:
 		result['debug'] = True
 
 	return (result, args)
@@ -82,14 +82,18 @@ if __name__ == '__main__':
 	(conf, args) = initialize()
 
 	daemon = None
-	if 'debug' in conf:
+	if 'debug' in conf and conf['debug'] == True:
 		daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 	else:
 		daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid')
 
 	if 'start' in args or 'restart' in args and 'logfile' in conf:
 		print("Will be running as daemon, all error messages will appear in the logfile!")
-	if 'start' in args:
+
+
+	if 'debug' in conf:
+		daemon.run()
+	elif 'start' in args:
 		daemon.start()
 	elif 'stop' in args:
 		daemon.stop()
@@ -97,8 +101,6 @@ if __name__ == '__main__':
 		daemon.restart()
 	elif 'genkey' in args:
 		util.genkey(conf)
-	elif 'debug' in conf:
-		daemon.run()
 	else:
 		usage()
 
