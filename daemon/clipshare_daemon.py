@@ -11,7 +11,7 @@ import cleaner.clipshare_cleaner as cleaner
 import time
 
 class ClipshareDaemon(Daemon):
-	logger = logging.getLogger('ClipshareDaemon')
+	logger = logging.getLogger(__name__)
 
 	def __init__(self, conf, pid, stdin=os.devnull, stdout=os.devnull, stderr=os.devnull):
 		Daemon.__init__(self, pid, stdin, stdout, stderr)
@@ -42,7 +42,15 @@ class ClipshareDaemon(Daemon):
 			logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
 		elif 'stdout' in self.conf and util.parse_bool(self.conf['stdout']):
 			logging.basicConfig(level=level, format=format, datefmt=dateformat)
-		self.logger.info('Logging setup, continuing...')
+
+		self.logger.info('Logging setup complete, dropping privileges...')
+		user = 'nobody'
+		group = 'nogroup'
+		if 'user' in self.conf and 'group' in self.conf:
+			user = self.conf['user']
+			group = self.conf['group']
+
+		util.drop_privileges(user, group)
 
 
 	def run(self):

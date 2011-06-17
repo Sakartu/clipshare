@@ -8,7 +8,7 @@ from threading import Thread, Lock
 
 class ClipshareServer(Thread):
 	s = None
-	logger = logging.getLogger('ClipshareRegistrationServer')
+	logger = logging.getLogger(__name__)
 
 	clientlist = {}
 	clientlistlock = Lock()

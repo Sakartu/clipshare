@@ -32,9 +32,9 @@ case "$1" in
 	start)
 		if [ "$CONFIGFILE" != "" ]
 		then
-			su $USER -c "python -u $DAEMONPATH -c $CONFIGFILE $OPTS start"
+			python -u $DAEMONPATH -c $CONFIGFILE $OPTS start
 		else
-			su $USER -c "python -u $DAEMONPATH $OPTS start"
+			python -u $DAEMONPATH $OPTS start
 		fi
 		;;
 	stop)
@@ -43,9 +43,9 @@ case "$1" in
 	restart)
 		if [ "$CONFIGFILE" != "" ]
 		then
-			su $USER -c "python -u $DAEMONPATH -c $CONFIGFILE $OPTS restart"
+			python -u $DAEMONPATH -c $CONFIGFILE $OPTS restart
 		else
-			su $USER -c "python -u $DAEMONPATH $OPTS restart"
+			python -u $DAEMONPATH $OPTS restart
 		fi
 		;;
 	*)

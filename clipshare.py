@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	else:
 		daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid')
 
-	if 'start' in args or 'restart' in args and 'logfile' in conf:
+	if ('start' in args or 'restart' in args) and ('logfile' in conf and not 'debug' in conf):
 		print("Will be running as daemon, all error messages will appear in the logfile!")
 
 

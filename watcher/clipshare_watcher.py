@@ -5,7 +5,7 @@ import logging
 
 class ClipshareWatcher:
 	previous = ''
-	logger = logging.getLogger('ClipshareWatcher')
+	logger = logging.getLogger(__name__)
 
 	def __init__(self, conf, server):
 		self.conf = conf

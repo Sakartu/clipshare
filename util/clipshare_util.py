@@ -4,7 +4,10 @@ import threading
 import socket
 import re
 import os
+import pwd 
+import grp
 import util.constants as constants
+import logging
 
 cb = gtk.clipboard_get()
 cblock = threading.Lock()
@@ -13,6 +16,8 @@ types = {
 		'CSHELO' : r'CSHELO:(([0-9]{1,3}\.){3}[0-9]{1,3}):([0-9]{1,5}):OLEHSC',
 		'CSCONTENT' : r'CSCONTENT:(.*):TNETNOCSC'
 		}
+
+logger = logging.getLogger(__name__)
 
 def store_in_clipboard(content):
 	'''
@@ -174,3 +179,54 @@ def genkey(conf):
 		print('Key successfully written!\nDon\'t forget to add it to your configfile!')
 	except:
 		print('Something went wrong, maybe no permissions to write key?')
+
+def drop_privileges(uid_name='nobody', gid_name='nogroup'):
+	starting_uid = os.getuid()
+	starting_gid = os.getgid()
+
+
+	starting_uid_name = pwd.getpwuid(starting_uid)[0]
+
+
+	logger.info('Dropping privileges...')
+	logger.info('Started as %s/%s.' % (pwd.getpwuid(starting_uid)[0], grp.getgrgid(starting_gid)[0]))
+
+	if os.getuid() != 0:
+	# We're not root so, like, whatever dude
+		logger.warn("We're not root, so we can't drop privileges!")
+		return
+
+
+	# If we started as root, drop privs and become the specified user/group
+	if starting_uid == 0:
+
+
+		# Get the uid/gid from the name
+		running_uid = pwd.getpwnam(uid_name)[2]
+		running_gid = grp.getgrnam(gid_name)[2]
+
+
+		# Try setting the new uid/gid
+		try:
+			os.setgid(running_gid)
+		except OSError, e:
+			logger.error('Could not set effective group id: %s' % e) 
+
+		try:
+			os.setuid(running_uid)
+		except OSError, e:
+			logger.error('Could not set effective user id: %s' % e)
+
+
+		# Ensure a very convervative umask
+		new_umask = 077
+		old_umask = os.umask(new_umask)
+		logger.info('drop_privileges: Old umask: %s, new umask: %s' % \
+		(oct(old_umask), oct(new_umask)))
+
+
+		final_uid = os.getuid()
+		final_gid = os.getgid()
+		logger.info('drop_privileges: running as %s/%s' % \
+		(pwd.getpwuid(final_uid)[0],
+		grp.getgrgid(final_gid)[0]))

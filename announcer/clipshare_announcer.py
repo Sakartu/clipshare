@@ -5,7 +5,7 @@ import logging
 import sys
 
 class ClipshareAnnouncer():
-	logger = logging.getLogger('ClipshareAnnouncer')
+	logger = logging.getLogger(__name__)
 	def __init__(self, conf):
 		self.conf = conf
 
