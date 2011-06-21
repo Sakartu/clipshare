@@ -3,8 +3,8 @@
 # Provides:          cilpshare
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 4 6
 # Short-Description: A program that shares your clipboard amongst other machines
 # Description:       Clipshare is a program that shares your clipboard with other machines in your network, through an encrypted connection
 ### END INIT INFO
