@@ -8,3 +8,4 @@ KEY_PATH = '~/.clipshare/clipshare.key'
 CONF_PATH = '~/.clipshare/clipshare.conf'
 CLEAN = 120				#number of seconds before clipshare cleans an ip from it's internal table
 MAX_LOG_SIZE=3000000	#maximum number of bytes a logfile can grow
+IP = '127.0.0.1'		#default ip to use if none can be found

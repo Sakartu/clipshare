@@ -42,13 +42,15 @@ class ClipshareServer(Thread):
 			t = util.get_message_type(decrypted)
 			if t == 'CSHELO':
 				#new client found, add it to the list
-				(ip, port) = util.parse_cs_helo_msg(decrypted)
-				#check that the ip isn't our own ip:
-				if str(ip) != self.conf['ip']:
+				(remote_ip, port) = util.parse_cs_helo_msg(decrypted)
+				local_ip = util.get_ip(self.conf)
+				#check that the remote_ip isn't our own ip:
+
+				if str(remote_ip) != local_ip:
 					self.clientlistlock.acquire()
-					if str(ip) not in self.clientlist:
-						self.logger.info('Added client with ip %s on port %d!' % (ip, port))
-					self.clientlist[ip] = (port, datetime.now())
+					if str(remote_ip) not in self.clientlist:
+						self.logger.info('Added client with ip %s on port %d!' % (remote_ip, port))
+					self.clientlist[remote_ip] = (port, datetime.now())
 					self.clientlistlock.release()
 						
 			elif t == 'CSCONTENT':

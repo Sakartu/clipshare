@@ -8,6 +8,7 @@ class ClipshareAnnouncer():
 	logger = logging.getLogger(__name__)
 	def __init__(self, conf):
 		self.conf = conf
+		self.ip = constants.IP
 
 	def run(self):
 		interval = constants.ANNOUNCE
@@ -17,9 +18,7 @@ class ClipshareAnnouncer():
 			except ValueError:
 				pass
 				#weird value in conf, take default
-		#get the local ip and set it for later use
-		ip = util.get_ip(self.conf)
-		self.conf['ip'] = ip
+
 		port = constants.PORT
 		if 'port' in self.conf:
 			try:
@@ -28,19 +27,25 @@ class ClipshareAnnouncer():
 				#weird value in conf, take default
 				pass
 
-		if ip:
-			self.logger.info('Found local ip %s!' % (ip))
-			self.logger.info('Setting up announcer with interval %d...' % (interval))
-			t = InfiniteTimer(interval, self.announce, [ip, port], immediate=True)
-			t.daemon = True
-			t.start()
-		else:
-			self.logger.error('No local ip-address could be found and none was specified, exitting!')
-			sys.exit(2)
+		self.logger.info('Setting up announcer with interval %d...' % (interval))
+		t = InfiniteTimer(interval, self.announce, [port], immediate=True)
+		t.daemon = True
+		t.start()
 
-	def announce(self, ip, port):
-		self.logger.debug('Announcing %s:%d!' % (ip, port))
-		msg = util.encrypt(self.conf['keyfile'],"CSHELO:%s:%d:OLEHSC" % (ip, port))
-		util.broadcast(msg, constants.PORT)
+	def announce(self, port):
+		#get the local ip and set it for later use
+		ip = util.get_ip(self.conf)
+		if len(ip) == 0:
+			self.logger.error('No local ip-address could be found and none was specified, using default!')
+			ip = constants.IP
+
+		if ip != self.ip:
+			self.logger.info('Found local ip %s!' % (ip))
+			self.ip = ip
+
+		self.logger.debug('Announcing %s:%d!' % (self.ip, port))
+		msg = util.encrypt(self.conf['keyfile'],"CSHELO:%s:%d:OLEHSC" % (self.ip, port))
+		util.broadcast(msg, constants.PORT) #use fixed port for sending
+
 
 
