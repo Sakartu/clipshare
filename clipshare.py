@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from server import clipshare_server
-import time
 import util.daemon as daemon
 import logging
 import sys
@@ -8,10 +6,8 @@ import os
 import optparse
 import ConfigParser
 from daemon.clipshare_daemon import ClipshareDaemon
-from ncrypt.cipher import CipherType
 import util.clipshare_util as util
 import util.constants as constants
-import readline
 
 conf = None
 
