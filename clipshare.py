@@ -33,101 +33,101 @@ The different possible commands are:
 '''
 
 def initialize():
-	""" 
-	A method that initializes the clipshare program.
-	It parses the configuration files and the arguments and options
-	"""
+    """ 
+    A method that initializes the clipshare program.
+    It parses the configuration files and the arguments and options
+    """
 
-	#we parse the options and the config file
-	(conf, args) = parse_opts()
-	setup_logging(conf)
+    #we parse the options and the config file
+    (conf, args) = parse_opts()
+    setup_logging(conf)
 
-	return (conf, args)
+    return (conf, args)
 
 def setup_logging(conf):
-	#if we're in debugging mode we use loglevel DEBUG, otherwise ERROR
-	level = None
-	if 'debug' in conf:
-		level = logging.DEBUG
-	else:
-		level = logging.INFO
-	format = '%(asctime)s : %(message)s'
-	dateformat = '%d/%m/%Y %H:%M:%S'
+    #if we're in debugging mode we use loglevel DEBUG, otherwise ERROR
+    level = None
+    if 'debug' in conf:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    format = '%(asctime)s : %(message)s'
+    dateformat = '%d/%m/%Y %H:%M:%S'
 
+    #then we initialize the logging functionality
+    if 'logfile' in conf:
+        path = os.path.expanduser(conf['logfile'])
 
-	#then we initialize the logging functionality
-	if 'logfile' in conf:
-		path = os.path.expanduser(conf['logfile'])
-
-		if not os.path.exists(os.path.dirname(path)):
-			try:
-				os.makedirs(os.path.dirname(path))
-			except:
-				print('Could nog create logfile or dirs, exitting')
-				sys.exit(2)
-		#logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
-		formatter = logging.Formatter(fmt=format, datefmt=dateformat)
-		logging.getLogger().setLevel(level)
-		handler = logging.handlers.RotatingFileHandler(path, maxBytes=constants.MAX_LOG_SIZE, backupCount=2)
-		handler.setFormatter(formatter)
-		logging.getLogger().addHandler(handler)
-	elif 'stdout' in conf and util.parse_bool(conf['stdout']):
-		logging.basicConfig(level=level, format=format, datefmt=dateformat)
+        if not os.path.exists(os.path.dirname(path)):
+            try:
+                os.makedirs(os.path.dirname(path))
+            except:
+                print('Could nog create logfile or dirs, exitting')
+                sys.exit(2)
+        #logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
+        formatter = logging.Formatter(fmt=format, datefmt=dateformat)
+        logging.getLogger().setLevel(level)
+        handler = logging.handlers.RotatingFileHandler(path, maxBytes=constants.MAX_LOG_SIZE, backupCount=2)
+        handler.setFormatter(formatter)
+        logging.getLogger().addHandler(handler)
+    elif 'stdout' in conf and util.parse_bool(conf['stdout']):
+        logging.basicConfig(level=level, format=format, datefmt=dateformat)
 
 
 def parse_opts():
-	parser = optparse.OptionParser(usage=usagestr)
-	parser.add_option('-c', '--conf', nargs=1, dest="new_path", help='NEW_PATH specifies a different configuration file')
-	parser.add_option('-d', '--debug', dest="debug", action='store_true', help='This puts the program in debugging mode, so it will log everything')
+    parser = optparse.OptionParser(usage=usagestr)
+    parser.add_option('-c', '--conf', nargs=1, dest="new_path", help='NEW_PATH specifies a different configuration file')
+    parser.add_option('-d', '--debug', dest="debug", action='store_true', help='This puts the program in debugging mode, so it will log everything')
 
-	(options, args) = parser.parse_args()
+    (options, args) = parser.parse_args()
 
-	config = ConfigParser.SafeConfigParser()																															   
-	path = os.path.expanduser(constants.CONF_PATH)
-	if options.new_path:
-		path = options.new_path
-	
-	if os.path.exists(path) and os.access(path, os.F_OK) and os.access(path, os.W_OK):
-		config.read(path)
-	else:
-		print "No configfile found, aborting!"
-		sys.exit(2)
+    config = ConfigParser.SafeConfigParser()
 
-	result = dict(config.items('clipshare'))
+    path = os.path.expanduser(constants.CONF_PATH)
+    if options.new_path:
+        path = options.new_path
+    
+    if os.path.exists(path) and os.access(path, os.F_OK) and os.access(path, os.W_OK):
+        config.read(path)
+    else:
+        print "No configfile found, aborting!"
+        sys.exit(2)
 
-	if options.debug or 'debug' in result:
-		result['debug'] = True
+    result = dict(config.items('clipshare'))
 
-	return (result, args)
+    if options.debug or 'debug' in result:
+        result['debug'] = True
+
+    return (result, args)
 
 def usage():
-	print(usagestr)
-	print("Usage: %s start|stop|restart|genkey [options]" % (sys.argv[0]))
-	sys.exit(0)
+    print(usagestr)
+    print("Usage: %s start|stop|restart|genkey [options]" % (sys.argv[0]))
+    sys.exit(0)
 
 if __name__ == '__main__':
-	(conf, args) = initialize()
+    (conf, args) = initialize()
 
-	daemon = None
-	if 'debug' in conf and conf['debug'] == True:
-		daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-	else:
-		daemon = ClipshareDaemon(conf, '/tmp/clipshare.pid')
+    d = None
+    if 'debug' in conf and conf['debug'] == True:
+        d = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+    else:
+        d = ClipshareDaemon(conf, '/tmp/clipshare.pid')
 
-	if ('start' in args or 'restart' in args) and ('logfile' in conf and not 'debug' in conf):
-		print("Will be running as daemon, all error messages will appear in the logfile!")
+    if ('start' in args or 'restart' in args) and ('logfile' in conf and not 'debug' in conf):
+        print("Will be running as daemon, all error messages will appear in the logfile!")
 
 
-	if 'debug' in conf:
-		daemon.run()
-	elif 'start' in args:
-		daemon.start()
-	elif 'stop' in args:
-		daemon.stop()
-	elif 'restart' in args:
-		daemon.restart()
-	elif 'genkey' in args:
-		util.genkey(conf)
-	else:
-		usage()
+    if 'debug' in conf:
+        d.run()
+    elif 'start' in args:
+        d.start()
+    elif 'stop' in args:
+        d.stop()
+    elif 'restart' in args:
+        d.restart()
+    elif 'genkey' in args:
+        util.genkey(conf)
+    else:
+        usage()
 
