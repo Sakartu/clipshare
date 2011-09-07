@@ -22,7 +22,8 @@ Dependencies
 For Clipshare to work you need the following dependencies:
 
 	- A recent python (tested with 2.6, newer should work, 3.x doesn't due to dependencies)
-	- The python-ncrypt library (can be found in the repositories of most distro's)
+	- The python-m2crypto library (can be found in the repositories of most distro's)
+	- The python-netifaces library (can be found in the repositories of most distro's)
 
 Furthermore, you need a clipshare config file in an accessible location
 (default is ~/.clipshare, but this can be changed with the -c param)
