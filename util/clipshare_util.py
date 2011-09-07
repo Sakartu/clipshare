@@ -195,21 +195,19 @@ def get_ip(conf):
 
     #check if an interface is specified
     if 'iface' in conf:
-        print 'woei'
         preferred_iface = conf['iface']
         iface = netifaces.ifaddresses(preferred_iface)
-        if preferred_iface in netifaces.interfaces() and netifaces.AF_INET in iface:
+        if netifaces.AF_INET in iface:
             ips.extend([i['addr'] for i in iface[netifaces.AF_INET]])
-    else:
+    #if ips is still empty, we either don't have a specified iface in the
+    #conf, or the interface specified in the configuration didn't have an
+    #ip address
+    if ips == []:
         for ifaceName in netifaces.interfaces():
             iface = netifaces.ifaddresses(ifaceName)
             if netifaces.AF_INET in iface:
                 ips.extend([i['addr'] for i in iface[netifaces.AF_INET]])
 
-    for ifaceName in netifaces.interfaces():
-        iface = netifaces.ifaddresses(ifaceName)
-        if netifaces.AF_INET in iface:
-            ips.extend([i['addr'] for i in iface[netifaces.AF_INET]])
     result = ''
     #remove 127.x.x.x addresses
     ips = filter(lambda x : x[0:3] != '127', ips)
