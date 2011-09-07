@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import logging
 import sys
+import logging
 import os
 import optparse
 import ConfigParser
@@ -8,18 +8,6 @@ from daemon.clipshare_daemon import ClipshareDaemon
 import util.clipshare_util as util
 import util.constants as constants
 
-#test whether the required modules are available
-try:
-    import M2Crypto
-except ImportError:
-    print "The M2Crypto library is required to run Clipshare!"
-    sys.exit(-1)
-
-try:
-    import netifaces
-except ImportError:
-    print "The netifaces library is required to run Clipshare!"
-    sys.exit(-1)
 
 conf = None
 
