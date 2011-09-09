@@ -1,4 +1,4 @@
 *.swp
 *.pyc
 tags
-gnome_panel/docs
+gnome_panel/documentation
