@@ -1,29 +1,28 @@
 <oaf_info>
+	<oaf_server iid="OAFIID:Clipshare_Factory" 
+		    type="exe" 
+		    location="/home/peter/src/clipshare/gnome_panel/applet.py">
 
-<oaf_server iid="OAFIID:GNOME_Clipshare_Factory"
-            type="exe"
-            location="/home/peter/src/clipshare/clipshare.py">
+		<oaf_attribute name="repo_ids" type="stringv">
+			<item value="IDL:Bonobo/GenericFactory:1.0"/>
+			<item value="IDL:Bonobo/Unknown:1.0"/>
+		</oaf_attribute>
+		<oaf_attribute name="name" type="string" value="Clipshare factory"/>
+		<oaf_attribute name="description" type="string" value="An applet for the clipshare tool"/>
+	</oaf_server>
 
-        <oaf_attribute name="repo_ids" type="stringv">
-                <item value="IDL:Bonobo/GenericFactory:1.0"/>
-                <item value="IDL:Bonobo/Unknown:1.0"/>
-        </oaf_attribute>
-        <oaf_attribute name="name" type="string" value="Clipshare"/>
-        <oaf_attribute name="description" type="string" value="A clipboard sharing tool"/>
-</oaf_server>
+	<oaf_server iid="OAFIID:Clipshare" 
+		    type="factory" 
+		    location="OAFIID:Clipshare_Factory"> 
 
-<oaf_server iid="OAFIID:GNOME_Clipshare"
-            type="factory"
-            location="OAFIID:GNOME_Clipshare_Factory">
-
-        <oaf_attribute name="repo_ids" type="stringv">
-                <item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
-                <item value="IDL:Bonobo/Control:1.0"/>
-                <item value="IDL:Bonobo/Unknown:1.0"/>
-        </oaf_attribute>
-        <oaf_attribute name="name" type="string" value="Clipshare"/>
-        <oaf_attribute name="description" type="string" value="A clipboard sharing tool"/>
-        <oaf_attribute name="panel:category" type="string" value="Utility"/>
-        <oaf_attribute name="panel:icon" type="string" value="icon.png"/>
-</oaf_server>
+		<oaf_attribute name="repo_ids" type="stringv">
+			<item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
+			<item value="IDL:Bonobo/Control:1.0"/>
+			<item value="IDL:Bonobo/Unknown:1.0"/>
+		</oaf_attribute>
+		<oaf_attribute name="name" type="string" value="Clipshare applet"/>
+		<oaf_attribute name="description" type="string" value="An applet that provides access to the clipshare daemon"/>
+		<oaf_attribute name="panel:category" type="string" value="Utility"/>
+		<oaf_attribute name="panel:icon" type="string" value="gnome-laptop.png"/>
+	</oaf_server>
 </oaf_info>
