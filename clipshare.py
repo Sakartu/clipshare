@@ -26,10 +26,10 @@ By default, all the related files for clipshare are stored in
 The different possible commands are:
 
     start/stop/restart
-    this starts/stops/restarts clipshare as a daemon
+        this starts/stops/restarts clipshare as a daemon
 
     genkey
-    this will generate a key for you 
+        this will generate a key for you 
 '''
 
 def initialize():
@@ -48,30 +48,30 @@ def setup_logging(conf):
     #if we're in debugging mode we use loglevel DEBUG, otherwise ERROR
     level = None
     if 'debug' in conf:
-    level = logging.DEBUG
+        level = logging.DEBUG
     else:
-    level = logging.INFO
+        level = logging.INFO
     format = '%(asctime)s : %(message)s'
     dateformat = '%d/%m/%Y %H:%M:%S'
 
     #then we initialize the logging functionality
     if 'logfile' in conf:
-    path = os.path.expanduser(conf['logfile'])
+        path = os.path.expanduser(conf['logfile'])
 
-    if not os.path.exists(os.path.dirname(path)):
-        try:
-        os.makedirs(os.path.dirname(path))
-        except:
-        print('Could nog create logfile or dirs, exitting')
-        sys.exit(2)
-    #logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
-    formatter = logging.Formatter(fmt=format, datefmt=dateformat)
-    logging.getLogger().setLevel(level)
-    handler = logging.handlers.RotatingFileHandler(path, maxBytes=constants.MAX_LOG_SIZE, backupCount=2)
-    handler.setFormatter(formatter)
-    logging.getLogger().addHandler(handler)
+        if not os.path.exists(os.path.dirname(path)):
+            try:
+                os.makedirs(os.path.dirname(path))
+            except:
+                print('Could nog create logfile or dirs, exitting')
+                sys.exit(2)
+        #logging.basicConfig(level=level, filename=path, format=format, datefmt=dateformat)
+        formatter = logging.Formatter(fmt=format, datefmt=dateformat)
+        logging.getLogger().setLevel(level)
+        handler = logging.handlers.RotatingFileHandler(path, maxBytes=constants.MAX_LOG_SIZE, backupCount=2)
+        handler.setFormatter(formatter)
+        logging.getLogger().addHandler(handler)
     elif 'stdout' in conf and util.parse_bool(conf['stdout']):
-    logging.basicConfig(level=level, format=format, datefmt=dateformat)
+        logging.basicConfig(level=level, format=format, datefmt=dateformat)
 
 
 def parse_opts():
@@ -85,18 +85,18 @@ def parse_opts():
 
     path = os.path.expanduser(constants.CONF_PATH)
     if options.new_path:
-    path = options.new_path
+        path = options.new_path
     
     if os.path.exists(path) and os.access(path, os.F_OK) and os.access(path, os.W_OK):
-    config.read(path)
+        config.read(path)
     else:
-    print "No configfile found, aborting!"
-    sys.exit(2)
+        print "No configfile found, aborting!"
+        sys.exit(2)
 
     result = dict(config.items('clipshare'))
 
     if options.debug or 'debug' in result:
-    result['debug'] = True
+        result['debug'] = True
 
     return (result, args)
 
@@ -110,24 +110,24 @@ if __name__ == '__main__':
 
     d = None
     if 'debug' in conf and conf['debug'] == True:
-    d = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
+        d = ClipshareDaemon(conf, '/tmp/clipshare.pid', stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
     else:
-    d = ClipshareDaemon(conf, '/tmp/clipshare.pid')
+        d = ClipshareDaemon(conf, '/tmp/clipshare.pid')
 
     if ('start' in args or 'restart' in args) and ('logfile' in conf and not 'debug' in conf):
-    print("Will be running as daemon, all error messages will appear in the logfile!")
+        print("Will be running as daemon, all error messages will appear in the logfile!")
 
 
     if 'debug' in conf:
-    d.run()
+        d.run()
     elif 'start' in args:
-    d.start()
+        d.start()
     elif 'stop' in args:
-    d.stop()
+        d.stop()
     elif 'restart' in args:
-    d.restart()
+        d.restart()
     elif 'genkey' in args:
-    util.genkey(conf)
+        util.genkey(conf)
     else:
-    usage()
+        usage()
 

@@ -15,9 +15,9 @@ cb = gtk.clipboard_get()
 cblock = threading.Lock()
 
 types = {
-    'CSHELO' : r'CSHELO:(([0-9]{1,3}\.){3}[0-9]{1,3}):([0-9]{1,5}):OLEHSC',
-    'CSCONTENT' : r'CSCONTENT:(.*):TNETNOCSC'
-    }
+        'CSHELO' : r'CSHELO:(([0-9]{1,3}\.){3}[0-9]{1,3}):([0-9]{1,5}):OLEHSC',
+        'CSCONTENT' : r'CSCONTENT:(.*):TNETNOCSC'
+        }
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def get_from_clipboard():
         cblock.acquire()
         text = cb.wait_for_text()
         cblock.release()
-    return text
+        return text
 
 def decrypt(keyfile, data):
     """ 
@@ -100,7 +100,7 @@ def parse_cs_helo_msg(msg):
     """ 
     A method that parses an incoming CSHELO message.
     if the message is of the following form:
-    CSHELO:<ip>:<port>:OLEHSC
+        CSHELO:<ip>:<port>:OLEHSC
     this method will parse, check and return a tuple of the form ('<ip>', port)
     if anything is out of order, this method returns None
     """
@@ -112,7 +112,7 @@ def parse_cs_helo_msg(msg):
             port = m.group(3)
             if len([x for x in ip.split('.') if int(x) < 255]) == 4 and int(port) < 2**16:
                 return (m.group(1), int(m.group(3)))    
-            return None
+        return None
     except:
         return None
 
@@ -120,7 +120,7 @@ def parse_cs_content_msg(msg):
     """ 
     A method that parses an incoming CSCONTENT message.
     if the message is of the following form:
-    CSCONTENT:<content>:TNETNOCSC
+        CSCONTENT:<content>:TNETNOCSC
     this method will parse, check and return the content bit
     if anything is out of order, this method returns None
     """
@@ -205,7 +205,7 @@ def genkey(conf):
     try:
         path = raw_input('Where would you like your key (Enter for default or ^D to exit)? [%s]: ' % default_path)
     except EOFError:
-    #user pressed ^D
+        #user pressed ^D
         print ''
         sys.exit(2)
 
