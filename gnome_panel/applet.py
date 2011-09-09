@@ -12,46 +12,36 @@ class Clipshare(gnomeapplet.Applet):
     def __init__(self, applet, iid):
         self.applet = applet
 
-        label = gtk.Label("C")
-        self.applet.add(label)
+        icon = gtk.Image()
+        icon.set_from_stock(gtk.STOCK_PASTE, gtk.ICON_SIZE_SMALL_TOOLBAR)
+        self.applet.add(icon)
         self.applet.show_all()
-        self.create_menu("bla")
-
+        self.create_menu(["Empty"] * 5)
 
     def create_menu(self, clipboard_contents):
-        xml = """<popup name="button3">
-<menuitem name="ItemPreferences" 
-          verb="Preferences" 
-          label="_Preferences" 
-          pixtype="stock" 
-          pixname="gtk-preferences"/>
-<separator/>
-<submenu name="Submenu" _label="Su_bmenu">
-<menuitem name="ItemAbout" 
-          verb="About" 
-          label="_About" 
-          pixtype="stock" 
-          pixname="gtk-about"/>
-</submenu>
-</popup>
-"""
-        verbs = [('About', self.show_about), ('Preferences', self.show_preferences)]
+        xml = '<popup name="button3"> <submenu name="History" _label=" _History\
+                " pixtype="stock" pixname="gtk-index">'
+        verbs = []
+        for item in clipboard_contents:
+            xml += '<menuitem name="' + item + \
+                    '" verb="' + item + \
+                    '" label="' + self.shorten(item) + \
+                    '" pixtype="stock" pixname="gtk-index"/>'
+            verbs.append((item, self.handle_select))
+        xml += " </submenu> </popup> "
+
+        self.applet.setup_menu(xml, verbs, None)
+
+    def shorten(self, item):
+        if len(item) > 13:
+            return item[:10] + '...'
+        else:
+            return item
+
+    def handle_select(self, obj, name, *data):
+        #set the current clipboard contents to name
+        pass
         
-        self.applet.setup_menu(xml, verbs, "Hello!")
-
-    def show_about(self, obj, label, *data):
-        print label
-        print data
-
-    def show_preferences(self, obj, label, *data):
-        print label
-        print data
-        
-def clipshare_factory(applet,iid):
-    Clipshare(applet, iid)
-    print 'Factory started'
-    return gtk.TRUE
-
 #Very useful if I want to debug. 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -60,7 +50,7 @@ if __name__ == '__main__':
             main_window.set_title("Python Applet")
             main_window.connect("destroy", gtk.main_quit)
             app = gnomeapplet.Applet()
-            clipshare_factory(app,None)
+            Clipshare(app, None)
             app.reparent(main_window)
             main_window.show_all()
             gtk.main()
@@ -68,4 +58,4 @@ if __name__ == '__main__':
     else:
         #If called via gnome panel, run it in the proper way
         print 'starting factory'
-        gnomeapplet.bonobo_factory('OAFIID:Clipshare_Factory', gnomeapplet.Applet.__gtype__, 'Sample Applet', '0.1', clipshare_factory)
+        gnomeapplet.bonobo_factory('OAFIID:Clipshare_Factory', gnomeapplet.Applet.__gtype__, 'Sample Applet', '0.1', Clipshare)
