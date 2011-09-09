@@ -9,6 +9,7 @@ import gobject
 import sys
 import codecs
 import random
+import os
 
 class HindiScroller(gnomeapplet.Applet):
 	#Reads a utf-8 file, reads all lines and returns them as a list with newlines stripped
